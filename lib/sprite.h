@@ -19,6 +19,7 @@ struct sprite {
 		struct pack_polygon *poly;
 		struct pack_label *label;
 		struct pack_pannel *pannel;
+		struct matrix *mat;
 	} s;
 	struct matrix mat;
 	int start_frame;
@@ -57,6 +58,8 @@ void sprite_setframe(struct sprite *, int frame, bool force_child);
 void sprite_mount(struct sprite *, int index, struct sprite *);
 
 void sprite_aabb(struct sprite *s, struct srt *srt, int aabb[4]);
+
+bool sprite_child_visible(struct sprite *s, const char * childname);
 
 int ejoy2d_sprite(lua_State *L);
 
