@@ -3,6 +3,8 @@ local fw = require "ejoy2d.framework"
 local pack = require "ejoy2d.simplepackage"
 local particle = require "ejoy2d.particle"
 
+fw.AnimationFramePerFrame = 1
+
 pack.load {	pattern = fw.WorkDir..[[examples/asset/?]], "sample", }
 particle.preload(fw.WorkDir.."examples/asset/particle")
 
@@ -31,6 +33,9 @@ function game.drawframe()
 end
 
 function game.touch(what, x, y)
+end
+
+function game.handle_error(...)
 end
 
 ej.start(game)

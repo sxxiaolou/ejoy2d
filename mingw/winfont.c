@@ -1,4 +1,5 @@
 #include "label.h"
+#include "array.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -60,7 +61,7 @@ font_glyph(const char * str, int unicode, void * buffer, struct font_context *ct
 	GLYPHMETRICS gm;
 	memset(&gm,0,sizeof(gm));
 
-	uint8_t tmp[ctx->w * ctx->h];
+	ARRAY(uint8_t, tmp, ctx->w * ctx->h);
 	memset(tmp,0, ctx->w * ctx->h);
 
 	GetGlyphOutlineW(

@@ -1,5 +1,6 @@
 
 #include "particle.h"
+#include "spritepack.h"
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -150,10 +151,16 @@ lupdate(lua_State *L) {
 	luaL_checktype(L,1,LUA_TUSERDATA);
 	struct particle_system *ps = (struct particle_system *)lua_touserdata(L, 1);
 	float dt = luaL_checknumber(L,2);
-	// float x = luaL_checknumber(L,3);
-	// float y = luaL_checknumber(L,4);
-	// ps->sourcePosition.x = x;
-	// ps->sourcePosition.y = y;
+
+	if (ps->config->positionType == POSITION_TYPE_GROUPED) {
+		struct matrix *m = (struct matrix *)lua_touserdata(L, 3);
+		ps->config->sourcePosition.x = m->m[4] / SCREEN_SCALE;
+		ps->config->sourcePosition.y = m->m[5] / SCREEN_SCALE;
+	} else {
+		ps->config->sourcePosition.x = 0;
+		ps->config->sourcePosition.y = 0;
+	}
+
 	particle_system_update(ps, dt);
 
 	lua_pushboolean(L, ps->isActive || ps->isAlive);
@@ -166,11 +173,12 @@ ldata(lua_State *L) {
 	luaL_checktype(L,2,LUA_TTABLE);
 	luaL_checktype(L,3,LUA_TTABLE);
 	struct particle_system *ps = (struct particle_system *)lua_touserdata(L, 1);
+	int edge = (int)luaL_checkinteger(L,4);
 	int n = ps->particleCount;
 	int i;
 	for (i=0;i<n;i++) {
 		struct particle *p = &ps->particles[i];
-		calc_particle_system_mat(p,&ps->matrix[i]);
+		calc_particle_system_mat(p,&ps->matrix[i], edge);
 
 		lua_pushlightuserdata(L, &ps->matrix[i]);
 		lua_rawseti(L, 2, i+1);

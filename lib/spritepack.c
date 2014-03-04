@@ -1,6 +1,7 @@
 #include "spritepack.h"
 #include "matrix.h"
 #include "shader.h"
+#include "array.h"
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -158,7 +159,7 @@ import_string(struct import_stream *is) {
 
 static void
 import_frame(struct pack_frame * pf, struct import_stream *is, int maxc) {
-	int n = import_byte(is);
+	int n = import_word(is);
 	int i;
 	pf->part = (struct pack_part *)ialloc(is->alloc, n * sizeof(struct pack_part));
 	pf->n = n;
@@ -346,7 +347,7 @@ limport(lua_State *L) {
 	if (lua_isstring(L,4)) {
 		is.stream = lua_tolstring(L, 4, &is.size);
 	} else {
-		is.stream = lua_touserdata(L, 4);
+		is.stream = (const char *)lua_touserdata(L, 4);
 		if (is.stream == NULL) {
 			return luaL_error(L, "Need const char *");
 		}
@@ -424,10 +425,10 @@ lpackstring(lua_State *L) {
 		uint8_t buf[1] = { 255 };
 		lua_pushlstring(L, (char *)buf, 1);
 	} else {
-		uint8_t buf[sz + 1];
+		ARRAY(uint8_t, buf, sz+1);
 		buf[0] = sz;
 		memcpy(buf+1, str, sz);
-		lua_pushlstring(L, (char *)buf, sz+1);
+		lua_pushlstring(L, (char *)(uint8_t *)buf, sz + 1);
 	}
 	return 1;
 }

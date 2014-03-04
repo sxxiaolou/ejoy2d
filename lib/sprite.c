@@ -6,6 +6,7 @@
 #include "matrix.h"
 #include "label.h"
 #include "scissor.h"
+#include "array.h"
 
 #include <string.h>
 #include <assert.h>
@@ -67,7 +68,9 @@ sprite_drawpolygon(struct pack_polygon *poly, const struct srt *srt, const struc
 			continue;
 		shader_texture(glid);
 		int pn = p->n;
-		float vb[4*pn];
+
+		ARRAY(float, vb, 4 * pn);
+
 		for (j=0;j<pn;j++) {
 			int xx = p->screen_coord[j*2+0];
 			int yy = p->screen_coord[j*2+1];

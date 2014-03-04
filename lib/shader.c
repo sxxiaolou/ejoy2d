@@ -1,6 +1,7 @@
 #include "shader.h"
 #include "opengl.h"
 #include "fault.h"
+#include "array.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -257,7 +258,7 @@ shader_draw(const float vb[16], uint32_t color) {
 void
 shader_drawpolygon(int n, const float *vb, uint32_t color) {
 	rs_commit();
-	struct vertex p[n];
+	ARRAY(struct vertex, p, n);
 	int i;
 	for (i=0;i<n;i++) {
 		p[i].vx = vb[i*4+0];

@@ -4,6 +4,7 @@
 #include "shader.h"
 #include "screen.h"
 #include "texture.h"
+#include "array.h"
 
 static int
 lload(lua_State *L) {
@@ -48,7 +49,7 @@ ldraw(lua_State *L) {
 	if (point * 4 != n) {
 		return luaL_error(L, "Invalid polygon");
 	}
-	float vb[n];
+	ARRAY(float, vb, n);
 	int i;
 	for (i=0;i<point;i++) {
 		lua_rawgeti(L, 2, i*2+1);

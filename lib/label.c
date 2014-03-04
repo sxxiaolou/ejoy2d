@@ -5,6 +5,7 @@
 #include "matrix.h"
 #include "spritepack.h"
 #include "screen.h"
+#include "array.h"
 
 #include <assert.h>
 #include <string.h>
@@ -167,8 +168,9 @@ gen_char(int unicode, const char * utf8, int size) {
 	ctx.w = rect->w ;
 	ctx.h = rect->h ;
 	int buffer_sz = ctx.w * ctx.h;
-	uint8_t buffer[buffer_sz];
-	uint8_t tmp[buffer_sz];
+
+	ARRAY(uint8_t, buffer, buffer_sz);
+	ARRAY(uint8_t, tmp, buffer_sz);
 
 	memset(tmp,0,buffer_sz);
 	font_glyph(utf8, unicode, tmp, &ctx);
