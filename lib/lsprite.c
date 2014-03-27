@@ -324,11 +324,25 @@ lgetname(lua_State *L) {
 }
 
 static int
+lgettype(lua_State *L) {
+	struct sprite *s = self(L);
+	lua_pushinteger(L, s->type);
+	return 1;
+}
+
+static int
 lgetparentname(lua_State *L) {
 	struct sprite *s = self(L);
 	if (s->parent == NULL)
 		return 0;
 	lua_pushstring(L, s->parent->name);
+	return 1;
+}
+
+static int
+lhasparent(lua_State *L) {
+	struct sprite *s = self(L);
+	lua_pushboolean(L, s->parent != NULL);
 	return 1;
 }
 
@@ -339,7 +353,15 @@ lsettext(lua_State *L) {
 		return luaL_error(L, "Only label can set text");
 	}
 	lua_settop(L,2);
+	if (lua_isnil(L,2)) {
+		s->data.text = NULL;
+		lua_setuservalue(L,1);
+		return 0;
+	}
 	s->data.text = luaL_checkstring(L,2);
+	lua_createtable(L,1,0);
+	lua_pushvalue(L, -2);
+	lua_rawseti(L, -2, 1);
 	lua_setuservalue(L, 1);
 	return 0;
 }
@@ -350,8 +372,11 @@ lgettext(lua_State *L) {
 	if (s->type != TYPE_LABEL) {
 		return luaL_error(L, "Only label can get text");
 	}
-	lua_settop(L,2);
 	lua_getuservalue(L, 1);
+	if (!lua_istable(L,-1)) {
+		return 0;
+	}
+	lua_rawgeti(L, -1, 1);
 	return 1;
 }
 
@@ -392,6 +417,7 @@ lgetter(lua_State *L) {
 		{"frame_count", lgettotalframe },
 		{"visible", lgetvisible },
 		{"name", lgetname },
+		{"type", lgettype },
 		{"text", lgettext},
 		{"color", lgetcolor },
 		{"additive", lgetadditive },
@@ -399,6 +425,7 @@ lgetter(lua_State *L) {
 		{"matrix", lgetmat },
 		{"world_matrix", lgetwmat },
 		{"parent_name", lgetparentname },
+		{"has_parent", lhasparent },
 		{NULL, NULL},
 	};
 	luaL_newlib(L,l);
@@ -767,8 +794,9 @@ static int
 lrecursion_frame(lua_State *L) {
 	struct sprite * s = self(L);
 	int frame = (int)luaL_checkinteger(L,2);
-	sprite_setframe(s, frame, true);
-	return 0;
+	int f = sprite_setframe(s, frame, true);
+	lua_pushinteger(L, f);
+	return 1;
 }
 
 static void

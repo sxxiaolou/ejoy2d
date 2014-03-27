@@ -97,7 +97,7 @@ local function pack_part(data, ret)
 		if data.add and data.add ~= 0 then
 			tag = tag .. "a"
 		end
-		if data.touch and data.touch == 1 then
+		if data.touch then
 			tag = tag .. "t"
 		end
 		table.insert(ret, pack.frametag(tag))
@@ -114,7 +114,7 @@ local function pack_part(data, ret)
 		if data.add and data.add ~= 0 then
 			table.insert(ret, pack.color(data.add))
 		end
-		if data.touch and data.touch == 1 then
+		if data.touch then
 			table.insert(ret, pack.word(1))
 		end
 		return pack.part_size(mat)
